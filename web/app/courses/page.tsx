@@ -30,13 +30,18 @@ export default function CoursesPage() {
 
     const fetchCourses = async () => {
         try {
-            const res = await fetch("${API_URL}/courses")
+            const token = localStorage.getItem("token")
+            const res = await fetch(`${API_URL}/courses`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {}
+            })
             if (res.ok) {
                 const data = await res.json()
                 setCourses(data)
+            } else {
+                setError("Failed to load courses")
             }
-        } catch (error) {
-            console.error("Failed to fetch courses:", error)
+        } catch (err) {
+            setError("Failed to load courses")
         } finally {
             setLoading(false)
         }
