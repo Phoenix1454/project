@@ -1,3 +1,4 @@
+import { API_URL } from "@/lib/config"
 "use client"
 
 import { useEffect, useState } from "react"
@@ -29,7 +30,7 @@ export default function CoursesPage() {
 
     const fetchCourses = async () => {
         try {
-            const res = await fetch("http://localhost:8000/courses")
+            const res = await fetch("${API_URL}/courses")
             if (res.ok) {
                 const data = await res.json()
                 setCourses(data)

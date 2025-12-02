@@ -1,3 +1,4 @@
+import { API_URL } from "@/lib/config"
 "use client"
 
 import { useState } from "react"
@@ -20,7 +21,7 @@ export default function PricingPage() {
 
         try {
             const token = localStorage.getItem("token")
-            const res = await fetch("http://localhost:8000/payment/create-checkout", {
+            const res = await fetch("${API_URL}/payment/create-checkout", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

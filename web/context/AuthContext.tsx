@@ -1,7 +1,6 @@
-"use client"
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { useRouter } from "next/navigation"
+import { API_URL } from "@/lib/config"
 
 interface User {
     id: number
@@ -35,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const fetchUser = async (token: string) => {
         try {
-            const res = await fetch("http://localhost:8000/auth/me", {
+            const res = await fetch(`${API_URL}/auth/me`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             if (res.ok) {

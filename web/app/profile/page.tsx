@@ -1,3 +1,4 @@
+import { API_URL } from "@/lib/config"
 "use client"
 
 import { useEffect, useState } from "react"
@@ -41,7 +42,7 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
         const token = localStorage.getItem("token")
         try {
-            const res = await fetch("http://localhost:8000/profile", {
+            const res = await fetch("${API_URL}/profile", {
                 headers: { Authorization: `Bearer ${token}` }
             })
             if (res.ok) {

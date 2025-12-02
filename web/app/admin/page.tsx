@@ -1,3 +1,4 @@
+import { API_URL } from "@/lib/config"
 "use client"
 
 import { useEffect, useState } from "react"
@@ -25,7 +26,7 @@ export default function AdminDashboard() {
     const fetchAdminData = async () => {
         const token = localStorage.getItem("token")
         try {
-            const res = await fetch("http://localhost:8000/admin/dashboard", {
+            const res = await fetch("${API_URL}/admin/dashboard", {
                 headers: { Authorization: `Bearer ${token}` }
             })
             if (res.ok) {

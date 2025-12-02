@@ -1,28 +1,29 @@
+import { API_URL } from "@/lib/config"
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import Link from "next/link"
-import { Mail, Lock, ArrowRight, Sparkles } from "lucide-react"
+import { Mail, Lock, LogIn } from "lucide-react"
 
 export default function LoginPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
-    const [loading, setLoading] = useState(false)
+    const router = useRouter()
     const { login } = useAuth()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError("")
-        setLoading(true)
 
         try {
-            const formData = new URLSearchParams()
+            const formData = new FormData()
             formData.append("username", email)
             formData.append("password", password)
 
-            const res = await fetch("http://localhost:8000/auth/token", {
+            const res = await fetch(`${API_URL}/auth/token`, {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: formData

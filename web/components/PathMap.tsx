@@ -1,3 +1,4 @@
+import { API_URL } from "@/lib/config"
 "use client"
 
 import { useState, useEffect } from "react"
@@ -29,7 +30,7 @@ export function PathMap({ courseId = 1 }: PathMapProps) {
 
     const fetchCourseTitle = async () => {
         try {
-            const res = await fetch(`http://localhost:8000/courses`)
+            const res = await fetch(`${API_URL}/courses`)
             if (res.ok) {
                 const courses = await res.json()
                 const course = courses.find((c: any) => c.id === courseId)
@@ -48,7 +49,7 @@ export function PathMap({ courseId = 1 }: PathMapProps) {
 
         try {
             const endpoint = courseId ? `/courses/${courseId}/path` : `/path`
-            const res = await fetch(`http://localhost:8000${endpoint}`, {
+            const res = await fetch(`${API_URL}${endpoint}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             if (res.ok) {
@@ -86,7 +87,7 @@ export function PathMap({ courseId = 1 }: PathMapProps) {
 
         try {
             const token = localStorage.getItem("token")
-            await fetch("http://localhost:8000/progress/complete", {
+            await fetch("${API_URL}/progress/complete", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

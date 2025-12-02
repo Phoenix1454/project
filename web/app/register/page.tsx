@@ -1,24 +1,25 @@
+import { API_URL } from "@/lib/config"
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import Link from "next/link"
-import { Mail, Lock, ArrowRight, Sparkles, User } from "lucide-react"
+import { Mail, Lock, UserPlus, ArrowRight } from "lucide-react"
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
-    const [loading, setLoading] = useState(false)
+    const router = useRouter()
     const { login } = useAuth()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError("")
-        setLoading(true)
 
         try {
-            const res = await fetch("http://localhost:8000/auth/register", {
+            const res = await fetch(`${API_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
