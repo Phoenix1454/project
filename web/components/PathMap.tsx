@@ -1,7 +1,6 @@
 "use client"
 
 import { API_URL } from "@/lib/config"
-"use client"
 
 import { useState, useEffect } from "react"
 import { LessonNode, LessonStatus } from "./LessonNode"

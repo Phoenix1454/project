@@ -1,8 +1,6 @@
 "use client"
 
 import { API_URL } from "@/lib/config"
-"use client"
-
 import { useEffect, useState } from "react"
 import { useAuth } from "@/context/AuthContext"
 import { useRouter } from "next/navigation"
