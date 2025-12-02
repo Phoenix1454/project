@@ -49,7 +49,7 @@ class Video(Base):
     resolution_height = Column(Integer)
     
     # Curriculum Organization
-    difficulty_level = Column(Enum(DifficultyLevel), nullable=True)
+    difficulty_level = Column(SQLEnum(DifficultyLevel), nullable=True)
     cluster_name = Column(String, nullable=True) # e.g., "Basics", "Patterns"
     order_index = Column(Integer, nullable=True) # For manual sorting
 
