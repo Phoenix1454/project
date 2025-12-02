@@ -58,21 +58,36 @@ class StripeHandler:
             print(f"Webhook signature verification failed: {e}")
             raise
     
+    
     @staticmethod
-    def handle_successful_payment(session: dict) -> dict:
-        """Process successful payment and return user data to update"""
-        user_id = int(session['metadata']['user_id'])
-        mode = session['mode']
+    def handle_course_purchase(session: dict, db) -> dict:
+        """Process successful course purchase and create CoursePurchase record"""
+        from .models import CoursePurchase
         
-        # Determine premium expiry
-        if mode == 'payment':  # One-time payment
-            premium_expires_at = None  # Lifetime access
-        else:  # Subscription
-            premium_expires_at = (datetime.utcnow() + timedelta(days=30)).isoformat()
+        course_id = int(session['metadata']['course_id'])
+        user_email = session['metadata']['user_email']
+        payment_id = session['payment_intent']
+        
+        # Import User model
+        from .models import User
+        user = db.query(User).filter(User.email == user_email).first()
+        
+        if not user:
+            raise Exception(f"User not found: {user_email}")
+        
+        # Create course purchase record
+        purchase = CoursePurchase(
+            user_id=user.id,
+            course_id=course_id,
+            stripe_payment_id=payment_id,
+            amount_paid=COURSE_PRICE_GBP
+        )
+        db.add(purchase)
+        db.commit()
         
         return {
-            'user_id': user_id,
-            'is_premium': True,
-            'stripe_customer_id': session.get('customer'),
-            'premium_expires_at': premium_expires_at
+            'user_id': user.id,
+            'course_id': course_id,
+            'purchased_at': purchase.purchased_at
         }
+

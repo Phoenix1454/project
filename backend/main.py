@@ -376,7 +376,7 @@ async def create_checkout(
 
 @app.post("/payment/webhook")
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
-    """Handle Stripe webhooks"""
+    """Handle Stripe webhook events for course purchases"""
     payload = await request.body()
     sig_header = request.headers.get('stripe-signature')
     
@@ -385,18 +385,17 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-    # Handle successful payment
+    # Handle successful course purchase
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-        user_data = StripeHandler.handle_successful_payment(session)
         
-        # Update user in database
-        user = db.query(User).filter(User.id == user_data['user_id']).first()
-        if user:
-            user.is_premium = 1
-            user.stripe_customer_id = user_data['stripe_customer_id']
-            user.premium_expires_at = user_data['premium_expires_at']
-            db.commit()
+        try:
+            # Process course purchase
+            result = StripeHandler.handle_course_purchase(session, db)
+            print(f"✅ Course purchase successful: User {result['user_id']} purchased course {result['course_id']}")
+        except Exception as e:
+            print(f"❌ Error processing course purchase: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
     
     return {"status": "success"}
 
