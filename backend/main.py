@@ -6,7 +6,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 
-from .models import Base, Video, UserProgress, DifficultyLevel, User, Course
+from .models import Base, Video, UserProgress, DifficultyLevel, User, Course, CoursePurchase
 from . import auth
 from .database import engine, SessionLocal, get_db
 
@@ -315,7 +315,38 @@ def admin_dashboard(current_user: User = Depends(auth.get_current_admin), db: Se
         "users": [{"id": u.id, "email": u.email, "is_admin": u.is_admin} for u in users]
     }
 
-# --- Payment Endpoints ---
+# Payment Endpoints
+@app.post("/payment/purchase-course/{course_id}")
+def purchase_course(course_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Create checkout session for purchasing a single course at £2"""
+    # Check if user already owns the course
+    existing_purchase = db.query(CoursePurchase).filter(
+        CoursePurchase.user_id == current_user.id,
+        CoursePurchase.course_id == course_id
+    ).first()
+    
+    if existing_purchase:
+        raise HTTPException(status_code=400, detail="You already own this course")
+    
+    # Get course details
+    course = db.query(Course).filter(Course.id == course_id).first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    
+    # Create Stripe checkout session
+    from .stripe_handler import StripeHandler
+    success_url = "https://project-seven-beta-56.vercel.app/payment/success"
+    cancel_url = f"https://project-seven-beta-56.vercel.app/course/{course_id}"
+    
+    session_data = StripeHandler.create_course_checkout_session(
+        user_email=current_user.email,
+        course_id=course_id,
+        course_title=course.title,
+        success_url=success_url,
+        cancel_url=cancel_url
+    )
+    
+    return {"checkout_url": session_data["url"]}
 
 from fastapi import Request
 from .stripe_handler import StripeHandler
