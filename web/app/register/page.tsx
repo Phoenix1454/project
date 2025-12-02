@@ -1,4 +1,3 @@
-import { API_URL } from "@/lib/config"
 "use client"
 
 import { useState } from "react"
