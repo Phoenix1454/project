@@ -16,9 +16,10 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError("")
+        setLoading(true)
 
         try {
-            const formData = new FormData()
+            const formData = new URLSearchParams()
             formData.append("username", email)
             formData.append("password", password)
 
