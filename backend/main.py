@@ -243,7 +243,57 @@ def complete_video(req: ProgressRequest, current_user: User = Depends(auth.get_c
         progress.completed_at = datetime.utcnow().isoformat()
     
     db.commit()
-    return {"message": "Progress saved"}
+    return {"message": "Progress updated", "video": video}
+
+# Admin endpoint to seed courses
+@app.post("/admin/seed-courses")
+def seed_courses(db: Session = Depends(get_db)):
+    """Seed the database with 5 life skills courses"""
+    courses_data = [
+        {
+            "title": "Adulting 101: The Survival Guide",
+            "description": "Master essential life skills from laundry to meal prep",
+            "thumbnail_url": "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b",
+            "difficulty": "beginner"
+        },
+        {
+            "title": "DIY Home Repair",
+            "description": "Fix common household issues like a pro",
+            "thumbnail_url": "https://images.unsplash.com/photo-1581578731548-c64695cc6952",
+            "difficulty": "intermediate"
+        },
+        {
+            "title": "Financial Literacy",
+            "description": "Take control of your money and build wealth",
+            "thumbnail_url": "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e",
+            "difficulty": "beginner"
+        },
+        {
+            "title": "Office Survival",
+            "description": "Excel at work with essential digital skills",
+            "thumbnail_url": "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc",
+            "difficulty": "beginner"
+        },
+        {
+            "title": "Car Maintenance Basics",
+            "description": "Keep your vehicle running smoothly",
+            "thumbnail_url": "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7",
+            "difficulty": "intermediate"
+        }
+    ]
+    
+    created_courses = []
+    for course_data in courses_data:
+        # Check if course already exists
+        existing = db.query(Course).filter(Course.title == course_data["title"]).first()
+        if not existing:
+            course = Course(**course_data, video_count=0)
+            db.add(course)
+            db.commit()
+            db.refresh(course)
+            created_courses.append(course)
+    
+    return {"message": f"Seeded {len(created_courses)} courses", "courses": created_courses}
 
 # --- Admin Endpoints ---
 
