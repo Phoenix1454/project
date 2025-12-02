@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String, Enum, Text
+from sqlalchemy import Column, Integer, String, Enum as SQLEnum, Text, Float, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
 import enum
 from .database import Base
 
