@@ -1,42 +1,72 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import { PathMap } from "@/components/PathMap"
+import { API_URL } from "@/lib/config"
 import { ArrowLeft } from "lucide-react"
 
 export default function CoursePage() {
-    const { user, isLoading, logout } = useAuth()
+    const { user, isLoading } = useAuth()
     const router = useRouter()
     const params = useParams()
     const courseId = params.id as string
+    const [isPurchased, setIsPurchased] = useState(false)
+    const [purchasing, setPurchasing] = useState(false)
 
     useEffect(() => {
         if (!isLoading && !user) {
             router.push("/login")
+        } else if (user) {
+            checkPurchaseStatus()
         }
     }, [user, isLoading, router])
 
-    if (isLoading || !user) {
-        return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-white">Loading...</div>
+    const checkPurchaseStatus = async () => {
+        // TODO: Add endpoint to check if user owns course
+        // For now, assume not purchased
+        setIsPurchased(false)
+    }
+
+    const handlePurchase = async () => {
+        setPurchasing(true)
+        try {
+            const token = localStorage.getItem("token")
+            const res = await fetch(`${API_URL}/payment/purchase-course/${courseId}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            if (res.ok) {
+                const data = await res.json()
+                // Redirect to Stripe checkout
+                window.location.href = data.checkout_url
+            } else {
+                alert("Failed to create checkout session")
+            }
+        } catch (error) {
+            console.error("Purchase error:", error)
+            alert("Failed to purchase course")
+        } finally {
+            setPurchasing(false)
+        }
+    }
+
+    if (isLoading) {
+        return <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center text-white">Loading...</div>
     }
 
     return (
-        <main className="min-h-screen bg-gray-950 text-white overflow-hidden relative">
-            {/* Navigation */}
-            <div className="absolute top-4 left-4 right-4 z-50 flex items-center justify-between">
-                {/* Back Button */}
-                <button
-                    onClick={() => router.push("/courses")}
-                    className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded text-sm border border-gray-700 transition"
                 >
-                    <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4" />
                     All Courses
-                </button>
+                </button >
 
-                {/* User Controls */}
-                <div className="flex items-center gap-3">
+        {/* User Controls */ }
+        < div className = "flex items-center gap-3" >
                     <button
                         onClick={() => router.push("/profile")}
                         className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm hover:scale-110 transition-transform shadow-lg"
@@ -51,11 +81,11 @@ export default function CoursePage() {
                     >
                         Logout
                     </button>
-                </div>
-            </div>
+                </div >
+            </div >
 
-            {/* Course Content */}
-            <PathMap courseId={parseInt(courseId)} />
-        </main>
+        {/* Course Content */ }
+        < PathMap courseId = { parseInt(courseId) } />
+        </main >
     )
 }
