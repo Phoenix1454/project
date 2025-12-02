@@ -12,12 +12,23 @@ class Course(Base):
     __tablename__ = 'courses'
     
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
+    title = Column(String, nullable=False)
     description = Column(String)
-    thumbnail_url = Column(String, nullable=True)
-    difficulty = Column(String)  # Beginner/Intermediate/Advanced
+    thumbnail_url = Column(String)
+    difficulty = Column(String)
     video_count = Column(Integer, default=0)
-    created_at = Column(String)  # ISO format
+    created_at = Column(String, default=lambda: datetime.utcnow().isoformat())
+
+class CoursePurchase(Base):
+    """Track individual course purchases"""
+    __tablename__ = "course_purchases"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
+    purchased_at = Column(String, default=lambda: datetime.utcnow().isoformat())
+    stripe_payment_id = Column(String)
+    amount_paid = Column(Float, default=2.0)  # £2 per course
 
 # --- Video Model ---
 class Video(Base):

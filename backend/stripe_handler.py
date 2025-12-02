@@ -6,40 +6,44 @@ from datetime import datetime, timedelta
 # Stripe API Configuration
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "sk_test_YOUR_KEY_HERE")
 
+# Per-course pricing (£2 per course)
+COURSE_PRICE_GBP = 2.00
+
 class StripeHandler:
-    """Handles all Stripe payment operations"""
-    
-    PRICE_ONE_TIME = "price_1SZeN0DjadSejnKUixOrLr2Q"  # $49.99 lifetime
-    PRICE_MONTHLY = "price_1SZeN0DjadSejnKUPsXpNAr9"   # $9.99/month
+    """Handles all Stripe payment operations for per-course purchases"""
     
     @staticmethod
-    def create_checkout_session(
+    def create_course_checkout_session(
         user_email: str,
-        user_id: int,
-        price_id: str,
-        success_url: str,
-        cancel_url: str
-    ) -> str:
-        """Create a Stripe Checkout session and return the URL"""
+        course_id: int,
+    def create_course_checkout_session(user_email: str, course_id: int, course_title: str, success_url: str, cancel_url: str) -> dict:
+        """Create a Stripe checkout session for purchasing a single course"""
         try:
             session = stripe.checkout.Session.create(
-                customer_email=user_email,
                 payment_method_types=['card'],
                 line_items=[{
-                    'price': price_id,
+                    'price_data': {
+                        'currency': 'gbp',
+                        'unit_amount': int(COURSE_PRICE_GBP * 100),  # £2.00 in pence
+                        'product_data': {
+                            'name': f'Course: {course_title}',
+                            'description': f'Lifetime access to {course_title}',
+                        },
+                    },
                     'quantity': 1,
                 }],
-                mode='payment' if price_id == StripeHandler.PRICE_ONE_TIME else 'subscription',
-                success_url=success_url + '?session_id={CHECKOUT_SESSION_ID}',
+                mode='payment',
+                success_url=success_url,
                 cancel_url=cancel_url,
+                customer_email=user_email,
                 metadata={
-                    'user_id': user_id
+                    'course_id': course_id,
+                    'user_email': user_email,
                 }
             )
-            return session.url
+            return {"url": session.url, "session_id": session.id}
         except Exception as e:
-            print(f"Stripe error: {e}")
-            raise
+            raise Exception(f"Failed to create checkout session: {str(e)}")
     
     @staticmethod
     def verify_webhook_signature(payload: bytes, sig_header: str) -> dict:
