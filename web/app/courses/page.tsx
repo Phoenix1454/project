@@ -19,6 +19,7 @@ export default function CoursesPage() {
     const router = useRouter()
     const [courses, setCourses] = useState<Course[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState("")
 
     useEffect(() => {
         if (!isLoading && !user) {
