@@ -2,16 +2,16 @@ import { API_URL } from "@/lib/config"
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import Link from "next/link"
-import { Mail, Lock, UserPlus, ArrowRight } from "lucide-react"
+import { Mail, Lock, ArrowRight, Sparkles, User } from "lucide-react"
+import { API_URL } from "@/lib/config"
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
-    const router = useRouter()
+    const [loading, setLoading] = useState(false)
     const { login } = useAuth()
 
     const handleSubmit = async (e: React.FormEvent) => {
