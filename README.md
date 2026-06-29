@@ -2,6 +2,8 @@
 
 A full-stack course-selling platform: users browse a curriculum of video courses, pay per course via Stripe, and track their progress through a step-by-step learning path.
 
+> **Note:** the live demo backend is currently offline (Railway trial expired). The frontend at the deployed URL will load but can't fetch live data until the backend is redeployed. Run locally per the instructions below to try it out.
+
 ## What it does
 
 - **Auth** — JWT-based registration/login (`/auth/register`, `/auth/token`, `/auth/me`)
