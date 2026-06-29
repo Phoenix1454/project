@@ -33,3 +33,4 @@ Thumbs.db
 
 # Node modules (already in web/.gitignore)
 node_modules/
+.venv/

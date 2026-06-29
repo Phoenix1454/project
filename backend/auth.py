@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -8,8 +9,7 @@ from sqlalchemy.orm import Session
 from . import models
 from .database import get_db
 
-# Secret key for JWT (in production, use env var)
-SECRET_KEY = "supersecretkeyformvp"
+SECRET_KEY = os.environ["JWT_SECRET_KEY"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

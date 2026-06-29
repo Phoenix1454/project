@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import create_engine, select
@@ -464,18 +465,21 @@ def seed_data():
     if db.query(Video).count() == 0:
         pass 
         
-    # Seed Admin User
-    admin_email = "admin@example.com"
-    existing_admin = db.query(User).filter(User.email == admin_email).first()
-    if not existing_admin:
-        print("Seeding Admin User...")
-        admin_user = User(
-            email=admin_email,
-            hashed_password=auth.get_password_hash("admin123"),
-            is_admin=1,
-            created_at=datetime.utcnow().isoformat()
-        )
-        db.add(admin_user)
-        db.commit()
-        
+    # Seed Admin User — only if explicitly configured via env vars, never with a
+    # hardcoded default password (that would create a known admin login on every deploy).
+    admin_email = os.getenv("ADMIN_SEED_EMAIL")
+    admin_password = os.getenv("ADMIN_SEED_PASSWORD")
+    if admin_email and admin_password:
+        existing_admin = db.query(User).filter(User.email == admin_email).first()
+        if not existing_admin:
+            print(f"Seeding admin user: {admin_email}")
+            admin_user = User(
+                email=admin_email,
+                hashed_password=auth.get_password_hash(admin_password),
+                is_admin=1,
+                created_at=datetime.utcnow().isoformat()
+            )
+            db.add(admin_user)
+            db.commit()
+
     db.close()

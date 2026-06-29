@@ -36,6 +36,16 @@ web/
   components/           PathMap, LessonNode, VideoModal
 ```
 
+## Testing
+
+Unit tests cover password hashing and JWT token creation/validation:
+
+```bash
+pytest tests/ -v
+```
+
+Tests run automatically on every push via [GitHub Actions](.github/workflows/tests.yml).
+
 ## Running locally
 
 ### Backend
