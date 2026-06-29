@@ -71,8 +71,8 @@ export function PathMap({ courseId = 1 }: PathMapProps) {
     }
 
     useEffect(() => {
+        fetchCourseTitle()
         if (user) {
-            fetchCourseTitle()
             fetchPath()
         }
     }, [user, courseId])

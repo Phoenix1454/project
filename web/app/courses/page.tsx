@@ -15,19 +15,15 @@ interface Course {
 }
 
 export default function CoursesPage() {
-    const { user, isLoading } = useAuth()
+    const { user } = useAuth()
     const router = useRouter()
     const [courses, setCourses] = useState<Course[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState("")
 
     useEffect(() => {
-        if (!isLoading && !user) {
-            router.push("/login")
-        } else if (user) {
-            fetchCourses()
-        }
-    }, [user, isLoading, router])
+        fetchCourses()
+    }, [])
 
     const fetchCourses = async () => {
         try {
@@ -66,7 +62,7 @@ export default function CoursesPage() {
         }
     }
 
-    if (isLoading || loading) {
+    if (loading) {
         return <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center text-white">Loading...</div>
     }
 

@@ -15,13 +15,11 @@ export default function CoursePage() {
     const [isPurchased, setIsPurchased] = useState(true) // Default to true for now
     const [purchasing, setPurchasing] = useState(false)
 
-    useEffect(() => {
-        if (!isLoading && !user) {
-            router.push("/login")
-        }
-    }, [user, isLoading, router])
-
     const handlePurchase = async () => {
+        if (!user) {
+            router.push("/login")
+            return
+        }
         setPurchasing(true)
         try {
             const token = localStorage.getItem("token")
@@ -46,7 +44,7 @@ export default function CoursePage() {
         }
     }
 
-    if (isLoading || !user) {
+    if (isLoading) {
         return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-white">Loading...</div>
     }
 
@@ -74,20 +72,31 @@ export default function CoursePage() {
                         </button>
                     )}
 
-                    <button
-                        onClick={() => router.push("/profile")}
-                        className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm hover:scale-110 transition-transform shadow-lg"
-                        title="View Profile"
-                    >
-                        {user.email.charAt(0).toUpperCase()}
-                    </button>
+                    {user ? (
+                        <>
+                            <button
+                                onClick={() => router.push("/profile")}
+                                className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm hover:scale-110 transition-transform shadow-lg"
+                                title="View Profile"
+                            >
+                                {user.email.charAt(0).toUpperCase()}
+                            </button>
 
-                    <button
-                        onClick={logout}
-                        className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded text-sm border border-gray-700 transition"
-                    >
-                        Logout
-                    </button>
+                            <button
+                                onClick={logout}
+                                className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded text-sm border border-gray-700 transition"
+                            >
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            onClick={() => router.push("/login")}
+                            className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded text-sm border border-gray-700 transition"
+                        >
+                            Sign in
+                        </button>
+                    )}
                 </div>
             </div>
 
