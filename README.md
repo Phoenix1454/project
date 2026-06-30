@@ -2,7 +2,7 @@
 
 A full-stack course-selling platform: users browse a curriculum of video courses, pay per course via Stripe, and track their progress through a step-by-step learning path.
 
-> **Note:** the live demo backend is currently offline (Railway trial expired). The frontend at the deployed URL will load but can't fetch live data until the backend is redeployed. Run locally per the instructions below to try it out.
+> **Note:** the live demo backend is currently offline (Railway trial expired). To redeploy instantly on Render's free tier, click: [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy) — or run locally per the instructions below.
 
 ## What it does
 
@@ -22,7 +22,7 @@ A full-stack course-selling platform: users browse a curriculum of video courses
 | Payments | Stripe |
 | Database | PostgreSQL (psycopg2) |
 | Frontend | Next.js, React, Tailwind, Framer Motion |
-| Deployment | Railway (`railway.json`, `Procfile`) |
+| Deployment | Render (`render.yaml`) / Railway (`railway.json`, `Procfile`) |
 
 ## Project Structure
 
